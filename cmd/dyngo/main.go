@@ -23,6 +23,10 @@ func main() {
 		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
 	})
 
+	e.GET("/.build", func(c echo.Context) error {
+		return c.HTML(http.StatusOK, "Hello, Docker! <3")
+	})
+
 	httpPort := os.Getenv("HTTP_PORT")
 	if httpPort == "" {
 		httpPort = "8080"
