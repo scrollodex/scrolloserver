@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Binaries
+cmd/air2hugo/air2hugo
+cmd/dyngo/dyngo

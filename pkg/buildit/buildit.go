@@ -10,7 +10,7 @@ import (
 	"github.com/scrollodex/ResourceUtils/air2hugo/pkg/store"
 )
 
-func FullRun(atc *airtableclient.AirClient, debugFlag bool) error {
+func RefreshData(atc *airtableclient.AirClient, debugFlag bool) error {
 	// go GatherExistingEntryFilenames()
 
 	// go rawLocs.PullTable()

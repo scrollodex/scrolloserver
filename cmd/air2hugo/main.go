@@ -25,7 +25,7 @@ func main() {
 		os.Getenv("AIRTABLE_BASE_ID"),
 	)
 
-	err := buildit.FullRun(atc, debugFlag)
+	err := buildit.RefreshData(atc, debugFlag)
 	if err != nil {
 		log.Fatal(err)
 	}
