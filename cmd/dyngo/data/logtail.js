@@ -7,7 +7,7 @@ var dataelem = "#data";
 var pausetoggle = "#pause";
 var scrollelems = ["html", "body"];
 
-var url = "/.build/log.txt";
+var url = "/buildlog.txt";
 var fix_rn = true;
 var load = 30 * 1024; /* 30KB */
 var poll = 1000; /* 1s */

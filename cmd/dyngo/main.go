@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/scrollodex/ResourceUtils/air2hugo/pkg/airtableclient"
 
 	_ "embed"
 )
@@ -17,13 +19,25 @@ import (
 //go:embed data/logtail.js
 var logtailjs string
 
+var debugFlag bool
+
 func main() {
+	flag.BoolVar(&debugFlag, "debug", false, "Output debug info")
+
+	atc := airtableclient.New(
+		os.Getenv("AIRTABLE_APIKEY"),
+		os.Getenv("AIRTABLE_BASE_ID"),
+	)
+	// Start the initial run. This way we know the website is up to date.
+	maybeStartJob(atc)
 
 	var kickerPage = makeKickerHTML("MyName")
 
 	e := echo.New()
 
-	e.Use(middleware.Logger())
+	if debugFlag {
+		e.Use(middleware.Logger())
+	}
 	e.Use(middleware.Recover())
 	e.Use(middleware.StaticWithConfig(
 		middleware.StaticConfig{
@@ -50,6 +64,7 @@ func main() {
 	})
 
 	e.GET("/.build", func(c echo.Context) error {
+		maybeStartJob(atc)
 		return c.HTML(http.StatusOK, kickerPage)
 	})
 
@@ -71,6 +86,8 @@ func main() {
 	e.Logger.Fatal(e.Start(":" + httpPort))
 }
 
+// ?_=1667674645947
+
 var kickerTmpl = `<head>
 <title>Log viewer for {{.name}}</title>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -80,7 +97,7 @@ var kickerTmpl = `<head>
 
 <body>
 <div id="header">
-	<a href="#">GENERATE {{.name}}</a></b> --- 
+    <b>Click reload to regenerate {{.name}}</b> --- 
 	<a href="./.build">Reversed</a> or
 	<a href="./.build?noreverse">chronological</a> view.
 	<a id="pause" href='#'>Pause</a>.
