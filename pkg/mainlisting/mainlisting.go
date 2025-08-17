@@ -36,6 +36,7 @@ func Assemble(
 	locs locutil.Locations,
 	ents entutil.Entries,
 ) MainListing {
+
 	return MainListing{
 		Categories:     cats,
 		Locations:      locs,
@@ -47,18 +48,25 @@ func makePathEntries(ents entutil.Entries) []PathAndEntry {
 	var paes []PathAndEntry
 
 	for _, ent := range ents {
-		ent.Title = makeTitle(ent)
-		p := PathAndEntry{
-			Path:   makePath(ent),
-			Fields: ent,
+		for il := range ent.Location { // Generate one per location.
+			ent.Title = makeTitle(ent, il)
+
+			c, r, _ := locutil.SplitDisplay(ent.Location[il])
+			ent.Country = c
+			ent.Region = r
+
+			p := PathAndEntry{
+				Path:   makePath(ent, il),
+				Fields: ent,
+			}
+			paes = append(paes, p)
 		}
-		paes = append(paes, p)
 	}
 
 	return paes
 }
 
-func makeTitle(f entutil.Entry) string {
+func makeTitle(f entutil.Entry, locindex int) string {
 	var titlePart string
 	if (f.Firstname + f.Lastname + f.Credentials) == "" {
 		titlePart = f.Company
@@ -67,7 +75,7 @@ func makeTitle(f entutil.Entry) string {
 	}
 
 	var title string
-	countrycode, region, _ := locutil.SplitDisplay(f.Location)
+	countrycode, region, _ := locutil.SplitDisplay(f.Location[locindex])
 	if countrycode == "ZZ" || region == "" {
 		title = titlePart + fmt.Sprintf(" - %s from %s", f.Category, region)
 	} else {
@@ -81,7 +89,7 @@ func makeTitle(f entutil.Entry) string {
 
 var regexInvalidPath = regexp.MustCompile("[^A-Za-z0-9_]+")
 
-func makePath(f entutil.Entry) string {
+func makePath(f entutil.Entry, locindex int) string {
 
 	path := fmt.Sprintf("%d_%s-%s_%s",
 		f.ID,
@@ -89,6 +97,9 @@ func makePath(f entutil.Entry) string {
 		strings.ToLower(f.Lastname),
 		strings.ToLower(f.Company),
 	)
+	if locindex > 0 {
+		path += fmt.Sprintf("-%d", locindex)
+	}
 
 	// Remove diacritics from letters:
 	// Cite: https://stackoverflow.com/questions/26722450/remove-diacritics-using-go
