@@ -37,8 +37,6 @@ func Assemble(
 	ents entutil.Entries,
 ) MainListing {
 
-	//ents = entutil.FlattenEntriesOnePerLocation(ents)
-
 	return MainListing{
 		Categories:     cats,
 		Locations:      locs,
@@ -52,6 +50,11 @@ func makePathEntries(ents entutil.Entries) []PathAndEntry {
 	for _, ent := range ents {
 		for il := range ent.Location { // Generate one per location.
 			ent.Title = makeTitle(ent, il)
+
+			c, r, _ := locutil.SplitDisplay(ent.Location[il])
+			ent.Country = c
+			ent.Region = r
+
 			p := PathAndEntry{
 				Path:   makePath(ent, il),
 				Fields: ent,

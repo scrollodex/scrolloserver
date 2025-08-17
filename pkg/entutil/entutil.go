@@ -5,7 +5,6 @@ import (
 	"sort"
 
 	"github.com/mehanizm/airtable"
-	"github.com/scrollodex/ResourceUtils/air2hugo/pkg/locutil"
 	"github.com/scrollodex/ResourceUtils/air2hugo/pkg/safeget"
 )
 
@@ -101,13 +100,22 @@ func convert(raw *airtable.Record) *Entry {
 		LastEditDate: lastmod,
 	}
 
-	// FIXME: only deals with the first location
+	// FIXME: There might be better ways to deal with a missing location.
 	if len(rec.Location) == 0 {
 		rec.Location = []string{"Unknown"}
 	}
-	c, r, _ := locutil.SplitDisplay(rec.Location[0])
-	rec.Country = c
-	rec.Region = r
+	// NB(tlim): Originally entries only had one location, therefore we filled
+	// in these fields here.  Now an entry has a list of locations, which means
+	// we need to generate .Country and .Region for each location.  We'll put
+	// "FIXME" strings into the fields now to make sure we don't miss any cases
+	// where we need to generate the proper values later.
+	// This is kind of ugly, but it works.
+	//
+	// c, r, _ := locutil.SplitDisplay(rec.Location[0])
+	// rec.Country = c
+	// rec.Region = r
+	rec.Country = "FIXME-COUNTRY"
+	rec.Region = "FIXME-REGION"
 
 	if rec.Category == "" {
 		rec.Category = "unknown"
@@ -206,21 +214,3 @@ func (store *Entries) Locations() []string {
 
 	return result
 }
-
-// // FlattenEntriesOnePerLocation takes a list of entries and returns a new list
-// // with each entry duplicated for each of its locations.
-// func FlattenEntriesOnePerLocation(ents Entries) Entries {
-// 	var result Entries
-// 	for _, ent := range ents {
-// 		if len(ent.Location) == 0 {
-// 			panic("entry has no location") // FIXME: Handle this case more gracefully.  entutil.go should have assured that all entries have at least one location (even if it is "Unknown")
-// 		}
-// 		for _, loc := range ent.Location {
-// 			// Create a copy of the entry with the current location
-// 			newEnt := ent
-// 			newEnt.Location = []string{loc}
-// 			result = append(result, newEnt)
-// 		}
-// 	}
-// 	return result
-// }
