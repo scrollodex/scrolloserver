@@ -18,6 +18,32 @@ func String(f map[string]interface{}, k string) string {
 	}
 }
 
+// String sreturns the value as a list of string.
+func Strings(f map[string]interface{}, k string) []string {
+	switch v := f[k].(type) {
+	case string:
+		return []string{v}
+	case []interface{}: // Convert any list into a list of strings, skipping any nil or "" items.
+		var result []string
+		for _, item := range v {
+			if item == nil {
+				continue
+			}
+			str := fmt.Sprintf("%v", item)
+			if str == "" {
+				continue
+			}
+			result = append(result, str)
+		}
+		return result
+	case nil:
+		return []string{}
+	default:
+		fmt.Printf("DEBUG: STRING %v = %v\n", k, v)
+		panic(fmt.Sprintf("unimplemented type: %T", v))
+	}
+}
+
 // Int returns the value as a int, truncating or converting if needed.
 func Int(f map[string]interface{}, k string) int {
 	switch v := f[k].(type) {

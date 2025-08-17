@@ -24,8 +24,8 @@ type Entry struct {
 
 	ShortDesc string `yaml:"short_desc" json:"short_desc"` // MarkDown (1 line)
 	Phone     string `yaml:"phone" json:"phone"`
-	Fax       string `yaml:"fax" json:"fax"`
-	Address   string `yaml:"address" json:"address"`
+	//Fax       string `yaml:"fax" json:"fax"`
+	Address string `yaml:"address" json:"address"`
 
 	Email  string `yaml:"email" json:"email"`
 	Email2 string `yaml:"email2" json:"email2"`
@@ -36,12 +36,12 @@ type Entry struct {
 	Fees        string `yaml:"fees" json:"fees"`               // MarkDown
 	Description string `yaml:"description" json:"description"` // MarkDown
 
-	Category     string `yaml:"categories" json:"categories"`
-	Location     string `json:"location"`
-	Country      string `yaml:"countries" json:"countries,omitempty"`
-	Region       string `yaml:"regions" json:"regions"`
-	Status       int    `yaml:"-" json:"status"` // 0=Inactive, 1=Active, 2=Proposed
-	LastEditDate string `yaml:"last_update" json:"last_update"`
+	Category     string   `yaml:"categories" json:"categories"`
+	Location     []string `json:"location"`
+	Country      string   `yaml:"countries" json:"countries,omitempty"`
+	Region       string   `yaml:"regions" json:"regions"`
+	Status       int      `yaml:"-" json:"status"` // 0=Inactive, 1=Active, 2=Proposed
+	LastEditDate string   `yaml:"last_update" json:"last_update"`
 }
 
 // Entries is a list of Entry.
@@ -76,7 +76,7 @@ func convert(raw *airtable.Record) *Entry {
 	rec := &Entry{
 		ID:       getID(f),
 		Category: safeget.String(f, "Category"),
-		Location: safeget.String(f, "Location"),
+		Location: safeget.Strings(f, "Location"),
 		Status:   getStatus(f),
 
 		Company:     safeget.String(f, "Company"),
@@ -90,18 +90,22 @@ func convert(raw *airtable.Record) *Entry {
 		Description: safeget.String(f, "Description"),
 		Fees:        safeget.String(f, "Fees"),
 
-		Address:  safeget.String(f, "Address"),
-		Email:    safeget.String(f, "Email"),
-		Email2:   safeget.String(f, "Email2"),
-		Phone:    safeget.String(f, "Phone"),
-		Fax:      safeget.String(f, "Fax"),
+		Address: safeget.String(f, "Address"),
+		Email:   safeget.String(f, "Email"),
+		Email2:  safeget.String(f, "Email2"),
+		Phone:   safeget.String(f, "Phone"),
+		//Fax:      safeget.String(f, "Fax"),
 		Website:  safeget.String(f, "Website"),
 		Website2: safeget.String(f, "Website2"),
 
 		LastEditDate: lastmod,
 	}
 
-	c, r, _ := locutil.SplitDisplay(rec.Location)
+	// FIXME: only deals with the first location
+	if len(rec.Location) == 0 {
+		rec.Location = []string{"Unknown"}
+	}
+	c, r, _ := locutil.SplitDisplay(rec.Location[0])
 	rec.Country = c
 	rec.Region = r
 
@@ -190,10 +194,11 @@ func (store *Entries) Locations() []string {
 
 	seen := map[string]bool{}
 	for _, item := range *store {
-		n := item.Location
-		if !seen[n] {
-			result = append(result, n)
-			seen[n] = true
+		for _, n := range item.Location {
+			if !seen[n] {
+				result = append(result, n)
+				seen[n] = true
+			}
 		}
 	}
 
@@ -201,3 +206,21 @@ func (store *Entries) Locations() []string {
 
 	return result
 }
+
+// // FlattenEntriesOnePerLocation takes a list of entries and returns a new list
+// // with each entry duplicated for each of its locations.
+// func FlattenEntriesOnePerLocation(ents Entries) Entries {
+// 	var result Entries
+// 	for _, ent := range ents {
+// 		if len(ent.Location) == 0 {
+// 			panic("entry has no location") // FIXME: Handle this case more gracefully.  entutil.go should have assured that all entries have at least one location (even if it is "Unknown")
+// 		}
+// 		for _, loc := range ent.Location {
+// 			// Create a copy of the entry with the current location
+// 			newEnt := ent
+// 			newEnt.Location = []string{loc}
+// 			result = append(result, newEnt)
+// 		}
+// 	}
+// 	return result
+// }
