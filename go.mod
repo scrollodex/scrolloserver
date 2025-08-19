@@ -1,6 +1,6 @@
 module github.com/scrollodex/ResourceUtils/air2hugo
 
-go 1.23.0
+go 1.25.0
 
 require github.com/mehanizm/airtable v0.3.4
 
