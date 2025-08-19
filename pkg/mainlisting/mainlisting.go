@@ -48,10 +48,13 @@ func makePathEntries(ents entutil.Entries) []PathAndEntry {
 	var paes []PathAndEntry
 
 	for _, ent := range ents {
-		for il := range ent.Location { // Generate one per location.
+		for il, location := range ent.Locations { // Generate one per location.
 			ent.Title = makeTitle(ent, il)
 
-			c, r, _ := locutil.SplitDisplay(ent.Location[il])
+			// Store one location at a time.
+			ent.Location = location
+
+			c, r, _ := locutil.SplitDisplay(location)
 			ent.Country = c
 			ent.Region = r
 
@@ -75,7 +78,7 @@ func makeTitle(f entutil.Entry, locindex int) string {
 	}
 
 	var title string
-	countrycode, region, _ := locutil.SplitDisplay(f.Location[locindex])
+	countrycode, region, _ := locutil.SplitDisplay(f.Locations[locindex])
 	if countrycode == "ZZ" || region == "" {
 		title = titlePart + fmt.Sprintf(" - %s from %s", f.Category, region)
 	} else {
