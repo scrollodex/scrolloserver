@@ -36,7 +36,8 @@ type Entry struct {
 	Description string `yaml:"description" json:"description"` // MarkDown
 
 	Category     string   `yaml:"categories" json:"categories"`
-	Location     []string `json:"location"`
+	Location     string   `json:"location"`  // Stores one location at a time
+	Locations    []string `json:"locations"` // All the locations.
 	Country      string   `yaml:"countries" json:"countries,omitempty"`
 	Region       string   `yaml:"regions" json:"regions"`
 	Status       int      `yaml:"-" json:"status"` // 0=Inactive, 1=Active, 2=Proposed
@@ -75,8 +76,9 @@ func convert(raw *airtable.Record) *Entry {
 	rec := &Entry{
 		ID:       getID(f),
 		Category: safeget.String(f, "Category"),
-		Location: safeget.Strings(f, "Location"),
-		Status:   getStatus(f),
+		// Location: safeget.Strings(f, "Location"),
+		Locations: safeget.Strings(f, "Location"),
+		Status:    getStatus(f),
 
 		Company:     safeget.String(f, "Company"),
 		Salutation:  safeget.String(f, "Sal"),
@@ -101,8 +103,8 @@ func convert(raw *airtable.Record) *Entry {
 	}
 
 	// FIXME: There might be better ways to deal with a missing location.
-	if len(rec.Location) == 0 {
-		rec.Location = []string{"Unknown"}
+	if len(rec.Locations) == 0 {
+		rec.Locations = []string{"Unknown"}
 	}
 	// NB(tlim): Originally entries only had one location, therefore we filled
 	// in these fields here.  Now an entry has a list of locations, which means
@@ -202,7 +204,7 @@ func (store *Entries) Locations() []string {
 
 	seen := map[string]bool{}
 	for _, item := range *store {
-		for _, n := range item.Location {
+		for _, n := range item.Locations {
 			if !seen[n] {
 				result = append(result, n)
 				seen[n] = true

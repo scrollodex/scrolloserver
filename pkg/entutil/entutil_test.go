@@ -62,10 +62,10 @@ func Test_convert(t *testing.T) {
 }
 `,
 			want: Entry{
-				ID:       9999,
-				Category: "Chiropractors",
-				Location: []string{"AT-All (Austria)"},
-				Status:   1,
+				ID:        9999,
+				Category:  "Chiropractors",
+				Locations: []string{"AT-All (Austria)"},
+				Status:    1,
 
 				Company:     "MyCompany",
 				Salutation:  "MySalutation",
@@ -107,9 +107,9 @@ func Test_convert(t *testing.T) {
 
 func TestEntries_Locations(t *testing.T) {
 	testdata := Entries{
-		{Location: []string{"repeat"}},
-		{Location: []string{"two"}},
-		{Location: []string{"repeat"}},
+		{Locations: []string{"repeat"}},
+		{Locations: []string{"two"}},
+		{Locations: []string{"repeat"}},
 	}
 	want := []string{"repeat", "two"}
 
