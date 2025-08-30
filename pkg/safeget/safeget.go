@@ -2,6 +2,7 @@ package safeget
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 )
 
@@ -18,7 +19,7 @@ func String(f map[string]interface{}, k string) string {
 	}
 }
 
-// String sreturns the value as a list of string.
+// Strings returns the value as a sorted list of string.
 func Strings(f map[string]interface{}, k string) []string {
 	switch v := f[k].(type) {
 	case string:
@@ -35,6 +36,7 @@ func Strings(f map[string]interface{}, k string) []string {
 			}
 			result = append(result, str)
 		}
+		sort.Strings(result)
 		return result
 	case nil:
 		return []string{}
