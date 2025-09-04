@@ -48,22 +48,26 @@ func makePathEntries(ents entutil.Entries) []PathAndEntry {
 	var paes []PathAndEntry
 
 	for _, ent := range ents {
-		for il, location := range ent.Locations { // Generate one per location.
-			ent.Title = makeTitle(ent, il)
+		//for il, location := range ent.Locations { // Generate one per location.
+		il := 0
+		location := ent.Locations[il]
 
-			// Store one location at a time.
-			ent.Location = location
+		ent.Location = location
+		ent.Title = makeTitle(ent, il)
 
-			c, r, _ := locutil.SplitDisplay(location)
-			ent.Country = c
-			ent.Region = r
+		// Store one location at a time.
+		//ent.Location = location
 
-			p := PathAndEntry{
-				Path:   makePath(ent, il),
-				Fields: ent,
-			}
-			paes = append(paes, p)
+		c, r, _ := locutil.SplitDisplay(location)
+		ent.Country = c
+		ent.Region = r
+
+		p := PathAndEntry{
+			Path:   makePath(ent, il),
+			Fields: ent,
 		}
+		paes = append(paes, p)
+		//}
 	}
 
 	return paes

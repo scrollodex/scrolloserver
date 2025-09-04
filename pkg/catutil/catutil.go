@@ -63,7 +63,8 @@ func (store *Categories) Sort() {
 }
 
 // Less returns a < b.
-//   Sort by priority, then name.
+//
+//	Sort by priority, then name.
 func Less(a, b Category) bool {
 	ap := a.Priority
 	bp := b.Priority

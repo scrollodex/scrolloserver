@@ -61,7 +61,8 @@ func (store *Locations) Sort() {
 }
 
 // Less returns a < b.
-//   Note that "All" sorts to the top of the regions: ZA-All < ZA-Aaa < ZA-Foo
+//
+//	Note that "All" sorts to the top of the regions: ZA-All < ZA-Aaa < ZA-Foo
 func Less(a, b Location) bool {
 	if a.CountryCode != b.CountryCode {
 		return a.CountryCode < b.CountryCode

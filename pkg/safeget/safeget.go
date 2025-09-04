@@ -36,7 +36,7 @@ func Strings(f map[string]interface{}, k string) []string {
 			}
 			result = append(result, str)
 		}
-		sort.Strings(result)
+		sort.Strings(result) // For stability.
 		return result
 	case nil:
 		return []string{}
