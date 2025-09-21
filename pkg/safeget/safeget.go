@@ -9,10 +9,10 @@ import (
 // String returns the value as a string.
 func String(f map[string]interface{}, k string) string {
 	switch v := f[k].(type) {
-	case string:
-		return v
 	case nil:
 		return ""
+	case string:
+		return v
 	default:
 		fmt.Printf("DEBUG: STRING %v = %v\n", k, v)
 		panic(fmt.Sprintf("unimplemented type: %T", v))
