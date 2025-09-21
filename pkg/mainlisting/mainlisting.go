@@ -48,6 +48,11 @@ func makePathEntries(ents entutil.Entries) []PathAndEntry {
 	var paes []PathAndEntry
 
 	for _, ent := range ents {
+		// Skip anything that isn't "SHOW". (No "Hidden" or "Proposed")
+		if ent.Status != 1 {
+			continue
+		}
+
 		//for il, location := range ent.Locations { // Generate one per location.
 		il := 0
 		location := ent.Locations[il]
