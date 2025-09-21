@@ -33,7 +33,6 @@ func Test_convert(t *testing.T) {
 		"Email": "MyEmail",
 		"Email2": "MyEmail2",
 		"EntryID": 9999,
-		"Fax": "MyFax",
 		"Fees": "MyFees",
 		"First": "MyFirst",
 		"ID": 6001,
@@ -86,7 +85,10 @@ func Test_convert(t *testing.T) {
 				Website:  "MyWebsite",
 				Website2: "MyWebsite2",
 
-				LastEditDate: "2022-07-12T22:40:15.000Z",
+				Country: "FIXME-COUNTRY",
+				Region:  "FIXME-REGION",
+
+				LastEditDate: "2022-07-12",
 			},
 		},
 	}
