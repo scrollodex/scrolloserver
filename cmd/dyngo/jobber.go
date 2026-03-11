@@ -42,9 +42,20 @@ func theJob(filename string, atc *airtableclient.AirClient) {
 
 	startTime := time.Now()
 
+	// if filename's filesize is greater than 1mb, delete it and start fresh
+	fi, err := os.Stat(filename)
+	if err == nil {
+		if fi.Size() > 1*1024*1024 {
+			err = os.Remove(filename)
+			if err != nil {
+				log.Printf("Error deleting log file: %s", err)
+			}
+		}
+	}
+
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
-		panic(err)
+		panic(err) // Ok to panic.
 	}
 	defer f.Close()
 	log.SetOutput(f)
@@ -78,7 +89,9 @@ func theJob(filename string, atc *airtableclient.AirClient) {
 	if err != nil {
 		panic(err)
 	}
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		log.Printf("hugo failed: %v", err)
+	}
 
 	endTime := time.Now()
 	log.Println("DONE: ", startTime.Format("2006-01-02 3:4:5 PM"))

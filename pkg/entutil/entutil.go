@@ -127,7 +127,7 @@ func convert(raw *airtable.Record) *Entry {
 	return rec
 }
 
-func getID(f map[string]interface{}) int {
+func getID(f map[string]any) int {
 	// The ID is the "EntryID" column or, if blank,
 	// use the auto-generated ID column.
 
@@ -140,7 +140,7 @@ func getID(f map[string]interface{}) int {
 	return safeget.Int(f, "ID")
 }
 
-func getStatus(f map[string]interface{}) int {
+func getStatus(f map[string]any) int {
 	switch v := f["Status"].(type) {
 	case string:
 		switch v {

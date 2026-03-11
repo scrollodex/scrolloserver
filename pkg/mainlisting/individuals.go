@@ -41,7 +41,10 @@ func (m MainListing) WriteIndividuals() {
 		// If content is not in cache or is different, write the contents
 		if newContents != existingContentEntries[titlePath] {
 			fmt.Printf("UPDATING JSON %s\n", titlePath)
-			writeOneEntry(content_entries_dir, titlePath, newContents)
+			err := writeOneEntry(content_entries_dir, titlePath, newContents)
+			if err != nil {
+				log.Printf("Error writing entry %q: %s", titlePath, err)
+			}
 		} // else {
 		//fmt.Printf("*** CACHED JSON %s\n", titlePath)
 		// }

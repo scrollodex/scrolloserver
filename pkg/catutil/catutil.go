@@ -138,7 +138,7 @@ func (store *Categories) highestID() int {
 // This is fine because no system uses the IDs at this point.
 func (store *Categories) fixIDs() {
 	store.Sort()
-	for i, _ := range *store {
+	for i := range *store {
 		(*store)[i].ID = i + 1
 	}
 }
